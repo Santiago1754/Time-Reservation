@@ -41,16 +41,19 @@ available_slots = [slot for slot in all_slots if slot not in booked_slots_today]
 
 # Show only valid slots
 valid_slots = []
+today = date.today()
+start_limit = datetime.strptime("08:00 AM", "%I:%M %p").time()
+end_limit_today = datetime.strptime("12:30 PM", "%I:%M %p").time()
+end_limit_other = datetime.strptime("05:00 PM", "%I:%M %p").time()
+
 for slot in available_slots:
     slot_start = datetime.strptime(slot.split(" - ")[0], "%I:%M %p").time()
-
-    if selected_date == date.today():
-        # Today: only allow until 12:30 PM
-        if slot_start <= END_TIME:
+    
+    if selected_date == today:
+        if start_limit <= slot_start <= end_limit_today:
             valid_slots.append(slot)
     else:
-        # Future: allow after 12:30 PM only
-        if slot_start > END_TIME:
+        if start_limit <= slot_start <= end_limit_other:
             valid_slots.append(slot)
 
 slot = st.selectbox("Select a 15-minute slot", valid_slots)
